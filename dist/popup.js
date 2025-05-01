@@ -1,4 +1,5 @@
 "use strict";
+const fallbackRatio = 0.5;
 document.addEventListener("DOMContentLoaded", () => {
     var _a, _b;
     const slider = document.getElementById("poofSlider");
@@ -8,10 +9,9 @@ document.addEventListener("DOMContentLoaded", () => {
         valueLabel.textContent = sliderValue.toFixed(2);
     };
     (_a = document.getElementById("resetRatio")) === null || _a === void 0 ? void 0 : _a.addEventListener("click", () => {
-        const ratio = 0.5;
-        saveToChromeStorage(ratio);
-        updateSliderLabel(ratio);
-        slider.value = ratio.toString();
+        saveToChromeStorage(fallbackRatio);
+        updateSliderLabel(fallbackRatio);
+        slider.value = fallbackRatio.toString();
     });
     chrome.storage.local.get("poofRatio", (res) => {
         var _a;

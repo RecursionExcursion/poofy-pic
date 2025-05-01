@@ -1,3 +1,5 @@
+const fallbackRatio = 0.5;
+
 document.addEventListener("DOMContentLoaded", () => {
   const slider = document.getElementById("poofSlider") as HTMLInputElement;
   const valueLabel = document.getElementById("poofValue");
@@ -8,10 +10,9 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   document.getElementById("resetRatio")?.addEventListener("click", () => {
-    const ratio = 0.5;
-    saveToChromeStorage(ratio);
-    updateSliderLabel(ratio);
-    slider.value = ratio.toString();
+    saveToChromeStorage(fallbackRatio);
+    updateSliderLabel(fallbackRatio);
+    slider.value = fallbackRatio.toString();
   });
 
   chrome.storage.local.get("poofRatio", (res) => {
