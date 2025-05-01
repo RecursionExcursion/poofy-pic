@@ -1,0 +1,27 @@
+{
+  "name": "Poofy Pic",
+  "description": "Give your pics some poof",
+  "version": "1.0",
+  "manifest_version": 3,
+  "permissions": ["scripting", "activeTab", "storage"],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["dist/main.js"]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "assets/*.jpeg",
+        "assets/*.png",
+        "assets/*.webp",
+        "assets/image_manifest.json"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
