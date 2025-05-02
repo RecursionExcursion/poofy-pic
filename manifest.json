@@ -4,6 +4,11 @@
   "version": "1.0",
   "manifest_version": 3,
   "permissions": ["scripting", "activeTab", "storage"],
+  "icons": {
+    "16": "icons/image3.png",
+    "48": "icons/image3.png",
+    "128": "icons/image3.png"
+  },
   "action": {
     "default_popup": "popup.html"
   },
@@ -11,17 +16,6 @@
     {
       "matches": ["<all_urls>"],
       "js": ["dist/main.js"]
-    }
-  ],
-  "web_accessible_resources": [
-    {
-      "resources": [
-        "assets/*.jpeg",
-        "assets/*.png",
-        "assets/*.webp",
-        "assets/image_manifest.json"
-      ],
-      "matches": ["<all_urls>"]
     }
   ]
 }
