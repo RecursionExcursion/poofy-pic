@@ -1,78 +1,61 @@
-// let poofyLinks: string[] = [];
+async function initPoofing() {
+  const { image: b64 } = await chrome.storage.local.get("image");
+  const { mime: mimeType } = await chrome.storage.local.get("mime");
+  // const b64 = imagRes.image as string;
+  // const mimeType = mimeRes.mime as string;
+  if (!b64 || !mimeType) {
+    alert("no content");
+    return;
+  }
 
-// fetch(chrome.runtime.getURL("assets/image_manifest.json"))
-//   .then((res) => res.json())
-//   .then((images) => {
-//     poofyLinks = images;
-//     initPoofing();
-//   });
+  const base64WithMime = `data:${mimeType};base64,${b64}`;
 
-function initPoofing() {
-  chrome.storage.local.get("image", (imagRes) => {
-    chrome.storage.local.get("mime", (mimeRes) => {
-      const b64 = imagRes.image as string;
-      const mimeType = mimeRes.mime as string;
-      if (!b64 || !mimeType) {
-        alert("bo content");
-        return;
-      }
+  chrome.storage.local.get("poofRatio", (res) => {
+    const poofRatio = res.poofRatio ?? 0.5;
 
-      const base64WithMime = `data:${mimeType};base64,${b64}`;
+    const poofedSet = new WeakSet();
 
-      console.log(base64WithMime);
+    function poof(img: HTMLImageElement) {
+      if (poofedSet.has(img)) return;
 
-      chrome.storage.local.get("poofRatio", (res) => {
-        const poofRatio = res.poofRatio ?? 0.5;
+      if (poofRatio > Math.random()) {
+        const newSrc = base64WithMime;
+        img.src = newSrc;
 
-        console.log({ poofRatio });
+        poofedSet.add(img);
 
-        const poofed = new WeakSet();
-
-        function poof(img: HTMLImageElement) {
-          if (poofed.has(img)) return;
-
-          if (poofRatio > Math.random()) {
-            // const r = Math.floor(Math.random() * poofyLinks.length);
-            // const newSrc = chrome.runtime.getURL(`assets/${poofyLinks[r]}`);
-            const newSrc = base64WithMime;
+        //if the site tries to change it, overwrite it again
+        new MutationObserver(() => {
+          if (img.src !== newSrc) {
             img.src = newSrc;
+          }
+        }).observe(img, {
+          attributes: true,
+          attributeFilter: ["src"],
+        });
+      }
+    }
 
-            poofed.add(img);
+    // initial pass for any already-rendered images
+    document.querySelectorAll("img").forEach(poof);
 
-            //if the site tries to change it, overwrite it again
-            new MutationObserver(() => {
-              if (img.src !== newSrc) {
-                img.src = newSrc;
-              }
-            }).observe(img, {
-              attributes: true,
-              attributeFilter: ["src"],
-            });
+    // watch DOM for newly added images, infinite scrolling
+    new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        for (const node of mutation.addedNodes) {
+          if (node.nodeType !== Node.ELEMENT_NODE) continue;
+          const el = node as Element;
+
+          if (el.tagName === "IMG") {
+            poof(el as HTMLImageElement);
+          } else {
+            el.querySelectorAll?.("img").forEach(poof);
           }
         }
-
-        // initial pass for any already-rendered images
-        document.querySelectorAll("img").forEach(poof);
-
-        // watch DOM for newly added images, infinite scrolling
-        new MutationObserver((mutations) => {
-          for (const mutation of mutations) {
-            for (const node of mutation.addedNodes) {
-              if (node.nodeType !== Node.ELEMENT_NODE) continue;
-              const el = node as Element;
-
-              if (el.tagName === "IMG") {
-                poof(el as HTMLImageElement);
-              } else {
-                el.querySelectorAll?.("img").forEach(poof);
-              }
-            }
-          }
-        }).observe(document.body, {
-          childList: true,
-          subtree: true,
-        });
-      });
+      }
+    }).observe(document.body, {
+      childList: true,
+      subtree: true,
     });
   });
 }

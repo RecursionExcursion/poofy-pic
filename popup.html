@@ -16,7 +16,11 @@
       <button id="saveRatio">Save</button>
       <button id="resetRatio">Reset (0.5)</button>
     </div>
-    <input id="imageInput" type="file" accept="image/*" />
+    <div style="display: flex">
+      <button id="chooseFileButton">Choose File</button>
+      <label id="chooseFileLabel"></label>
+      <input id="imageInput" type="file" accept="image/*" hidden />
+    </div>
     <label id="msgLabel"></label>
     <div id="alertBox" style="display: none">
       <p>
